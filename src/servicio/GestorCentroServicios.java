@@ -166,4 +166,14 @@ public class GestorCentroServicios {
         turno.setEstado(EstadoTurno.CANCELADO);
         turnosPendientes.remove(turno);
     }
+    // Eliminación definitiva: el turno debe desaparecer de TODAS las colecciones
+    public void eliminarTurno(String codigo) {
+        Turno turno = turnosPorCodigo.remove(codigo);
+        if (turno == null) {
+            throw new IllegalArgumentException("No existe un turno con el código " + codigo);
+        }
+        turnos.remove(turno);
+        turnosOrdenados.remove(turno);
+        turnosPendientes.remove(turno);
+    }
 }
