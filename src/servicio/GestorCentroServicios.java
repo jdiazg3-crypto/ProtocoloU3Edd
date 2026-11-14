@@ -127,4 +127,43 @@ public class GestorCentroServicios {
     public int cantidadPendientes() {
         return turnosPendientes.size();
     }
+    public void modificarPrioridad(String codigo, Prioridad nuevaPrioridad) {
+        Turno turno = turnosPorCodigo.get(codigo);
+        if (turno == null) {
+            throw new IllegalArgumentException("No existe un turno con el código " + codigo);
+        }
+        if (turno.getEstado() != EstadoTurno.PENDIENTE) {
+            throw new IllegalStateException("Solo se puede cambiar la prioridad de turnos pendientes.");
+        }
+
+        // La PriorityQueue no se reordena sola cuando el objeto cambia:
+        // se saca, se modifica y se vuelve a insertar
+        turnosPendientes.remove(turno);
+        turno.setPrioridad(nuevaPrioridad);
+        turnosPendientes.add(turno);
+    }
+
+    public void modificarTipoServicio(String codigo, String nuevoTipo) {
+        Turno turno = turnosPorCodigo.get(codigo);
+        if (turno == null) {
+            throw new IllegalArgumentException("No existe un turno con el código " + codigo);
+        }
+        if (!existeTipoServicio(nuevoTipo)) {
+            throw new IllegalArgumentException("El tipo de servicio '" + nuevoTipo + "' no está registrado.");
+        }
+        // El tipo no es clave de ninguna colección, así que solo cambia el objeto
+        turno.setTipoServicio(nuevoTipo);
+    }
+
+    public void cancelarTurno(String codigo) {
+        Turno turno = turnosPorCodigo.get(codigo);
+        if (turno == null) {
+            throw new IllegalArgumentException("No existe un turno con el código " + codigo);
+        }
+        if (turno.getEstado() != EstadoTurno.PENDIENTE) {
+            throw new IllegalStateException("Solo se pueden cancelar turnos pendientes.");
+        }
+        turno.setEstado(EstadoTurno.CANCELADO);
+        turnosPendientes.remove(turno);
+    }
 }
