@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class GestorCentroServicios {
 
@@ -38,6 +41,8 @@ public class GestorCentroServicios {
     }
     // Búsqueda directa de turnos por código
     private final Map<String, Turno> turnosPorCodigo = new HashMap<>();
+    // Tipos de servicio sin duplicados
+    private final Set<String> tiposServicio = new HashSet<>();
 
     public Turno registrarTurno(String codigo, String documentoCliente,
                                 String tipoServicio, Prioridad prioridad) {
@@ -48,6 +53,11 @@ public class GestorCentroServicios {
         }
 
         Turno nuevo = new Turno(codigo, cliente, tipoServicio, prioridad, contadorLlegada + 1);
+
+        if (!tiposServicio.contains(nuevo.getTipoServicio())) {
+            throw new IllegalArgumentException(
+                    "El tipo de servicio '" + tipoServicio + "' no está registrado.");
+        }
 
         // Ahora la validación consulta el Map y no recorre la lista
         if (turnosPorCodigo.containsKey(nuevo.getCodigo())) {
@@ -70,5 +80,20 @@ public class GestorCentroServicios {
 
     public boolean existeTurno(String codigo) {
         return turnosPorCodigo.containsKey(codigo);
+    }
+    // Devuelve false si el tipo ya estaba registrado
+    public boolean registrarTipoServicio(String tipo) {
+        if (tipo == null || tipo.isBlank()) {
+            throw new IllegalArgumentException("El tipo de servicio es obligatorio.");
+        }
+        return tiposServicio.add(tipo.trim());
+    }
+
+    public boolean existeTipoServicio(String tipo) {
+        return tipo != null && tiposServicio.contains(tipo.trim());
+    }
+
+    public Set<String> listarTiposServicio() {
+        return Collections.unmodifiableSet(tiposServicio);
     }
 }
