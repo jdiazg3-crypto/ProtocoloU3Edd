@@ -36,6 +36,8 @@ public class GestorCentroServicios {
     public boolean existeCliente(String documento) {
         return clientesPorDocumento.containsKey(documento);
     }
+    // Búsqueda directa de turnos por código
+    private final Map<String, Turno> turnosPorCodigo = new HashMap<>();
 
     public Turno registrarTurno(String codigo, String documentoCliente,
                                 String tipoServicio, Prioridad prioridad) {
@@ -47,17 +49,26 @@ public class GestorCentroServicios {
 
         Turno nuevo = new Turno(codigo, cliente, tipoServicio, prioridad, contadorLlegada + 1);
 
-        // contains() usa equals(), o sea compara por código
-        if (turnos.contains(nuevo)) {
+        // Ahora la validación consulta el Map y no recorre la lista
+        if (turnosPorCodigo.containsKey(nuevo.getCodigo())) {
             throw new IllegalArgumentException("Ya existe un turno con el código " + codigo);
         }
 
         contadorLlegada++;
         turnos.add(nuevo);
+        turnosPorCodigo.put(nuevo.getCodigo(), nuevo);
         return nuevo;
     }
 
     public List<Turno> listarTurnos() {
         return Collections.unmodifiableList(turnos);
+    }
+    // Devuelve null si el código no existe
+    public Turno buscarTurno(String codigo) {
+        return turnosPorCodigo.get(codigo);
+    }
+
+    public boolean existeTurno(String codigo) {
+        return turnosPorCodigo.containsKey(codigo);
     }
 }
