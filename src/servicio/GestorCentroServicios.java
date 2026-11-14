@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 public class GestorCentroServicios {
@@ -23,6 +24,8 @@ public class GestorCentroServicios {
 
     // Consecutivo que se asigna a cada turno al llegar
     private long contadorLlegada = 0;
+    // Turnos siempre ordenados por código (orden natural: Turno.compareTo)
+    private final TreeSet<Turno> turnosOrdenados = new TreeSet<>();
 
     public void registrarCliente(Cliente cliente) {
         if (clientesPorDocumento.containsKey(cliente.getDocumento())) {
@@ -67,6 +70,7 @@ public class GestorCentroServicios {
         contadorLlegada++;
         turnos.add(nuevo);
         turnosPorCodigo.put(nuevo.getCodigo(), nuevo);
+        turnosOrdenados.add(nuevo);
         return nuevo;
     }
 
@@ -95,5 +99,8 @@ public class GestorCentroServicios {
 
     public Set<String> listarTiposServicio() {
         return Collections.unmodifiableSet(tiposServicio);
+    }
+    public Set<Turno> listarTurnosOrdenados() {
+        return Collections.unmodifiableSet(turnosOrdenados);
     }
 }
