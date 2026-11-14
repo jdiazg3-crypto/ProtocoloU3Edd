@@ -176,4 +176,13 @@ public class GestorCentroServicios {
         turnosOrdenados.remove(turno);
         turnosPendientes.remove(turno);
     }
+    public String resumenColecciones() {
+        return "Estado de las colecciones:\n"
+                + "  turnos (ArrayList): " + turnos.size() + "\n"
+                + "  turnosPorCodigo (HashMap): " + turnosPorCodigo.size() + "\n"
+                + "  turnosOrdenados (TreeSet): " + turnosOrdenados.size() + "\n"
+                + "  turnosPendientes (PriorityQueue): " + turnosPendientes.size() + "\n"
+                + "  clientesPorDocumento (HashMap): " + clientesPorDocumento.size() + "\n"
+                + "  tiposServicio (HashSet): " + tiposServicio.size();
+    }
 }
