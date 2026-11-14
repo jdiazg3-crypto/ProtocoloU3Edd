@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import comparadores.ComparadorPrioridad;
+import modelo.EstadoTurno;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 
 public class GestorCentroServicios {
@@ -26,6 +30,8 @@ public class GestorCentroServicios {
     private long contadorLlegada = 0;
     // Turnos siempre ordenados por código (orden natural: Turno.compareTo)
     private final TreeSet<Turno> turnosOrdenados = new TreeSet<>();
+    // Turnos pendientes: sale primero el de mayor prioridad, no el que llegó primero
+    private final Queue<Turno> turnosPendientes = new PriorityQueue<>(new ComparadorPrioridad());
 
     public void registrarCliente(Cliente cliente) {
         if (clientesPorDocumento.containsKey(cliente.getDocumento())) {
@@ -71,6 +77,7 @@ public class GestorCentroServicios {
         turnos.add(nuevo);
         turnosPorCodigo.put(nuevo.getCodigo(), nuevo);
         turnosOrdenados.add(nuevo);
+        turnosPendientes.add(nuevo);
         return nuevo;
     }
 
@@ -102,5 +109,22 @@ public class GestorCentroServicios {
     }
     public Set<Turno> listarTurnosOrdenados() {
         return Collections.unmodifiableSet(turnosOrdenados);
+    }
+    // peek() muestra el próximo sin sacarlo de la cola
+    public Turno verProximoTurno() {
+        return turnosPendientes.peek();
+    }
+
+    // poll() saca el de mayor prioridad; devuelve null si no hay pendientes
+    public Turno atenderSiguienteTurno() {
+        Turno turno = turnosPendientes.poll();
+        if (turno != null) {
+            turno.setEstado(EstadoTurno.ATENDIDO);
+        }
+        return turno;
+    }
+
+    public int cantidadPendientes() {
+        return turnosPendientes.size();
     }
 }
